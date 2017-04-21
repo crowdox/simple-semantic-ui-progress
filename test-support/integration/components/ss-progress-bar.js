@@ -6,7 +6,7 @@ moduleForComponent('ss-progress-bar', 'Integration | Component | ss progress bar
 });
 
 test('it renders', function(assert) {
-
+  assert.expect(2);
   // Set any properties with this.set('myProperty', 'value');
   // Handle any actions with this.on('myAction', function(val) { ... });
 
