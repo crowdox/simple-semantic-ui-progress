@@ -1,6 +1,9 @@
-import Ember from 'ember';
+import { htmlSafe } from '@ember/string';
+import { isBlank } from '@ember/utils';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['ui', 'progress'],
   classNameBindings: ['status'],
 
@@ -8,9 +11,9 @@ export default Ember.Component.extend({
 
   barComponentName: 'ss-progress-bar',
 
-  progressValue: Ember.computed('progress', function() {
+  progressValue: computed('progress', function() {
     let progress = this.get('progress');
-    if (Ember.isBlank(progress)) {
+    if (isBlank(progress)) {
       return 0;
     }
 
@@ -30,7 +33,7 @@ export default Ember.Component.extend({
     return progress;
   }),
 
-  status: Ember.computed('progressValue', function() {
+  status: computed('progressValue', function() {
     let progress = this.get('progressValue');
     if (progress <= 0) {
       return "";
@@ -43,10 +46,10 @@ export default Ember.Component.extend({
     return "active";
   }),
 
-  barStyle: Ember.computed('ms', 'progressValue', function() {
+  barStyle: computed('ms', 'progressValue', function() {
     let ms = this.get('ms');
     let progress = this.get('progressValue');
-    return Ember.String.htmlSafe(`transition-duration: ${ms}ms; width: ${progress}%;`);
+    return htmlSafe(`transition-duration: ${ms}ms; width: ${progress}%;`);
   })
 
 });
