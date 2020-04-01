@@ -1,188 +1,199 @@
-import { moduleForComponent, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render, settled } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('ss-progress', 'Integration | Component | ss progress', {
-  integration: true
-});
+module('Integration | Component | ss progress', function(hooks) {
+  setupRenderingTest(hooks);
 
-test('it renders', function(assert) {
-  assert.expect(2);
-  // Set any properties with this.set('myProperty', 'value');
-  // Handle any actions with this.on('myAction', function(val) { ... });
+  test('it renders', async function(assert) {
+    assert.expect(2);
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
 
-  this.render(hbs`{{ss-progress}}`);
+    await render(hbs`{{ss-progress}}`);
 
-  assert.equal(this.$().text().trim(), '');
+    assert.dom().hasText('');
 
-  // Template block usage:
-  this.render(hbs`
-    {{#ss-progress}}
-      template block text
-    {{/ss-progress}}
-  `);
+    // Template block usage:
+    await render(hbs`
+      {{#ss-progress}}
+        template block text
+      {{/ss-progress}}
+    `);
 
-  assert.equal(this.$().text().trim(), 'template block text');
-});
+    assert.dom().hasText('template block text');
+  });
 
-test('it renders with percent', function(assert) {
-  assert.expect(2);
+  test('it renders with percent', async function(assert) {
+    assert.expect(2);
 
-  this.render(hbs`
-    {{ss-progress progress=40 class="teal indicating"}}
-  `);
+    await render(hbs`
+      {{ss-progress progress=40 class="teal indicating"}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 40%;");
-});
+    assert.dom('.ui.progress').exists();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 40%;");
+  });
 
-test('it renders with percent with block', function(assert) {
-  assert.expect(2);
+  test('it renders with percent with block', async function(assert) {
+    assert.expect(2);
 
-  this.render(hbs`
-    {{#ss-progress progress=40 class="teal indicating" as |ss|}}
-      {{ss.bar}}
-      <div class="label">Completed</div>
-    {{/ss-progress}}
-  `);
+    await render(hbs`
+      {{#ss-progress progress=40 class="teal indicating" as |ss|}}
+        {{ss.bar}}
+        <div class="label">Completed</div>
+      {{/ss-progress}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 40%;");
-});
+    assert.dom('.ui.progress').exists();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 40%;");
+  });
 
-test('binding updates precent progress', function(assert) {
-  assert.expect(3);
+  test('binding updates precent progress', async function(assert) {
+    assert.expect(3);
 
-  this.set('progress', 40);
-  this.render(hbs`
-    {{ss-progress progress=progress class="teal indicating"}}
-  `);
+    this.set('progress', 40);
+    await render(hbs`
+      {{ss-progress progress=progress class="teal indicating"}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 40%;");
+    assert.dom('.ui.progress').exists();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 40%;");
 
-  this.set('progress', 60);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 60%;");
-});
+    this.set('progress', 60);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 60%;");
+  });
 
-test('binding updates precent progress with block', function(assert) {
-  assert.expect(3);
+  test('binding updates precent progress with block', async function(assert) {
+    assert.expect(3);
 
-  this.set('progress', 40);
-  this.render(hbs`
-    {{#ss-progress progress=progress class="teal indicating" as |ss|}}
-      {{ss.bar}}
-      <div class="label">Completed</div>
-    {{/ss-progress}}
-  `);
+    this.set('progress', 40);
+    await render(hbs`
+      {{#ss-progress progress=progress class="teal indicating" as |ss|}}
+        {{ss.bar}}
+        <div class="label">Completed</div>
+      {{/ss-progress}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 40%;");
+    assert.dom('.ui.progress').exists();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 40%;");
 
-  this.set('progress', 60);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 60%;");
-});
+    this.set('progress', 60);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 60%;");
+  });
 
-test('binding updates precent progress with total', function(assert) {
-  assert.expect(25);
+  test('binding updates precent progress with total', async function(assert) {
+    assert.expect(25);
 
-  this.set('progress', -5);
-  this.render(hbs`
-    {{ss-progress progress=progress class="teal indicating"}}
-  `);
+    this.set('progress', -5);
+    await render(hbs`
+      {{ss-progress progress=progress class="teal indicating"}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
+    assert.dom('.ui.progress').exists();
 
-  // Check with -5
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    // Check with -5
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', null);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', null);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', "stuff");
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', "stuff");
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 0);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 0);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 10);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 10%;");
-  assert.ok(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 10);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 10%;");
+    assert.dom('.ui.progress').hasClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 90);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 90%;");
-  assert.ok(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 90);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 90%;");
+    assert.dom('.ui.progress').hasClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 100);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 100%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.ok(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 100);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 100%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').hasClass('success');
 
-  this.set('progress', 110);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 100%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.ok(this.$('.ui.progress').hasClass('success'));
-});
+    this.set('progress', 110);
+    await settled();
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 100%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').hasClass('success');
+  });
 
-test('binding updates precent progress with total with block', function(assert) {
-  assert.expect(25);
+  test('binding updates precent progress with total with block', async function(assert) {
+    assert.expect(25);
 
-  this.set('progress', -5);
-  this.render(hbs`
-    {{#ss-progress progress=progress class="teal indicating" as |ss|}}
-      {{ss.bar}}
-      <div class="label">Completed</div>
-    {{/ss-progress}}
-  `);
+    this.set('progress', -5);
+    await render(hbs`
+      {{#ss-progress progress=progress class="teal indicating" as |ss|}}
+        {{ss.bar}}
+        <div class="label">Completed</div>
+      {{/ss-progress}}
+    `);
 
-  assert.equal(this.$('.ui.progress').length, 1);
+    assert.dom('.ui.progress').exists();
 
-  // Check with -5
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    // Check with -5
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', null);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', null);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', "stuff");
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', "stuff");
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 0);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 0%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 0);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 0%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 10);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 10%;");
-  assert.ok(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 10);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 10%;");
+    assert.dom('.ui.progress').hasClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 90);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 90%;");
-  assert.ok(this.$('.ui.progress').hasClass('active'));
-  assert.notOk(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 90);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 90%;");
+    assert.dom('.ui.progress').hasClass('active');
+    assert.dom('.ui.progress').doesNotHaveClass('success');
 
-  this.set('progress', 100);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 100%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.ok(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 100);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 100%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').hasClass('success');
 
-  this.set('progress', 110);
-  assert.equal(this.$('.ui.progress > .bar').attr('style'), "transition-duration: 300ms; width: 100%;");
-  assert.notOk(this.$('.ui.progress').hasClass('active'));
-  assert.ok(this.$('.ui.progress').hasClass('success'));
+    this.set('progress', 110);
+    assert.dom('.ui.progress > .bar').hasAttribute('style', "transition-duration: 300ms; width: 100%;");
+    assert.dom('.ui.progress').doesNotHaveClass('active');
+    assert.dom('.ui.progress').hasClass('success');
+  });
 });
