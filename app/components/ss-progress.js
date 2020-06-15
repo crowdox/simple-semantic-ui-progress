@@ -33,17 +33,27 @@ export default Component.extend({
     return progress;
   }),
 
-  status: computed('progressValue', function() {
-    let progress = this.get('progressValue');
-    if (progress <= 0) {
-      return "";
-    }
+  status: computed('progressValue', {
+    get() {
+      if (this._status) {
+        return this._status;
+      }
 
-    if (progress >= 100) {
-      return "success";
-    }
+      let progress = this.get('progressValue');
+      if (progress <= 0) {
+        return "";
+      }
 
-    return "active";
+      if (progress >= 100) {
+        return "success";
+      }
+
+      return "active";
+    },
+
+    set(key, value) {
+      return this._status = value;
+    }
   }),
 
   barStyle: computed('ms', 'progressValue', function() {
